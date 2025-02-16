@@ -125,10 +125,10 @@ namespace Paycompute.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EmployeeEditViewModel employeeEditViewModel) {
+        public async Task<IActionResult> Edit(EmployeeEditViewModel employeeEditView) {
 
             if (!ModelState.IsValid) {
-                var employee = _employeeService.GetById(employeeEditViewModel.Id);
+                var employee = _employeeService.GetById(employeeEditView.Id);
 
                 if (employee == null)
                 {
@@ -136,33 +136,33 @@ namespace Paycompute.Controllers
                 }
                 else
                 {
-                    employee.EmployeeNo = employeeEditViewModel.EmployeeNo;
-                    employee.FirstName = employeeEditViewModel.FirstName;
-                    employee.MiddleName = employeeEditViewModel.MiddleName;
-                    employee.LastName = employeeEditViewModel.LastName;
-                    employee.DOB = employeeEditViewModel.DOB;
-                    employee.DateJoined = employeeEditViewModel.DateJoined;
-                    employee.Designation = employeeEditViewModel.Designation;
-                    employee.NationalInsuranceNo = employeeEditViewModel.NationalInsuranceNo;
-                    employee.Email = employeeEditViewModel.Email;
-                    employee.Phone = employeeEditViewModel.Phone;
-                    employee.Gender = employeeEditViewModel.Gender;
-                    employee.Address = employeeEditViewModel.Address;
-                    employee.City = employeeEditViewModel.City;
-                    employee.PaymentMethod = employeeEditViewModel.PaymentMethod;
-                    employee.StudentLoan = employeeEditViewModel.StudentLoan;
-                    employee.UnionMember = employeeEditViewModel.UnionMember;
-                    employee.Postcode = employeeEditViewModel.Postcode;
-                    if (employeeEditViewModel.ImageURL != null && employeeEditViewModel.ImageURL.Length > 0)
+                    employee.EmployeeNo = employeeEditView.EmployeeNo;
+                    employee.FirstName = employeeEditView.FirstName;
+                    employee.MiddleName = employeeEditView.MiddleName;
+                    employee.LastName = employeeEditView.LastName;
+                    employee.DOB = employeeEditView.DOB;
+                    employee.DateJoined = employeeEditView.DateJoined;
+                    employee.Designation = employeeEditView.Designation;
+                    employee.NationalInsuranceNo = employeeEditView.NationalInsuranceNo;
+                    employee.Email = employeeEditView.Email;
+                    employee.Phone = employeeEditView.Phone;
+                    employee.Gender = employeeEditView.Gender;
+                    employee.Address = employeeEditView.Address;
+                    employee.City = employeeEditView.City;
+                    employee.PaymentMethod = employeeEditView.PaymentMethod;
+                    employee.StudentLoan = employeeEditView.StudentLoan;
+                    employee.UnionMember = employeeEditView.UnionMember;
+                    employee.Postcode = employeeEditView.Postcode;
+                    if (employeeEditView.ImageURL != null && employeeEditView.ImageURL.Length > 0)
                     {
                         var uploadDirectory = @"images/employee";
-                        var fileName = Path.GetFileNameWithoutExtension(employeeEditViewModel.ImageURL.FileName);
+                        var fileName = Path.GetFileNameWithoutExtension(employeeEditView.ImageURL.FileName);
                         var extension = Path.GetExtension(fileName);
 
                         var webRootPath = _hostingEnvironment.WebRootPath;
                         fileName = DateTime.UtcNow.ToString("yymmssff") + fileName + extension;
                         var path = Path.Combine(uploadDirectory, uploadDirectory, fileName);
-                        await employeeEditViewModel.ImageURL.CopyToAsync(new FileStream(path, FileMode.Create));
+                        await employeeEditView.ImageURL.CopyToAsync(new FileStream(path, FileMode.Create));
                         //below is the URL we will save in database
                         employee.ImageURL = "/" + uploadDirectory + "/" + fileName;
                     }
@@ -171,6 +171,61 @@ namespace Paycompute.Controllers
                 }
             }
             return View();
+        }
+
+        public IActionResult Details(int EmployeeId)
+        {
+            var employee = _employeeService.GetById(EmployeeId);
+            if (employee == null)
+            {
+                return View();
+            }
+            EmployeeDetailViewModel employeeDetailView = new EmployeeDetailViewModel()
+            {
+                Id = EmployeeId,
+                EmployeeNo = employee.EmployeeNo,
+                FullName = employee.FullName,
+                Gender = employee.Gender,
+                Designation = employee.Designation,
+                Email = employee.Email,
+                DOB = employee.DOB,
+                Phone = employee.Phone,
+                DateJoined = employee.DateJoined,
+                PaymentMethod = employee.PaymentMethod,
+                NationalInsuranceNo = employee.NationalInsuranceNo,
+                UnionMember = employee.UnionMember,
+                StudentLoan = employee.StudentLoan,
+                Address = employee.Address,
+                City = employee.City,
+                Postcode = employee.Postcode,
+                ImageURL = employee.ImageURL,
+
+            };
+
+            return View(employeeDetailView);
+        }
+
+        [HttpGet]
+        public IActionResult DeleteEmployee(int EmployeeID)
+        {
+            var employee = _employeeService.GetById(EmployeeID);
+            if ( employee == null)
+            {
+                return NotFound();
+            }
+            var employeeDeleteView = new EmployeeDeleteViewModel()
+            {
+                EmployeeId = employee.Id,
+                EmployeeName = employee.FullName
+            }; 
+            return View(employeeDeleteView);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteEmployee(EmployeeDeleteViewModel employeeDeleteViewmodel)
+        {
+            await _employeeService.Delete(employeeDeleteViewmodel.EmployeeId);
+            return RedirectToAction(nameof(Index));
         }
     }
 }
