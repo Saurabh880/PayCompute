@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Paycompute.Persistence;
+using Paycompute.Services;
+using Paycompute.Services.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+
 
 var app = builder.Build();
 

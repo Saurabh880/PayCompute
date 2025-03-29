@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Paycompute/.vs/Paycompute/config
+/Paycompute/.vs/Paycompute/copilot-chat/21bac5c7/sessions
+
+/Paycompute/appsettings.json
+*.json
+/Paycompute/.vs

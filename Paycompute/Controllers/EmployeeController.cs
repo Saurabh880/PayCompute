@@ -172,7 +172,7 @@ namespace Paycompute.Controllers
             }
             return View();
         }
-
+        [HttpGet]
         public IActionResult Details(int EmployeeId)
         {
             var employee = _employeeService.GetById(EmployeeId);
